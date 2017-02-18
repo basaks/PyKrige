@@ -183,13 +183,11 @@ def initialize_variogram_model(x, y, z, variogram_model, variogram_model_paramet
                                variogram_function, nlags, weight, coordinates_type):
     """Initializes the variogram model for kriging according
     to user specifications or to defaults"""
-
-    x1, x2 = np.meshgrid(x, x)
-    y1, y2 = np.meshgrid(y, y)
-    z1, z2 = np.meshgrid(z, z)
-
+    x1, x2 = np.meshgrid(x, x, sparse=True)
+    y1, y2 = np.meshgrid(y, y, sparse=True)
+    z1, z2 = np.meshgrid(z, z, sparse=True)
     dz = z1 - z2
-#GEO
+
     if coordinates_type == 'euclidean':
         dx = x1 - x2
         dy = y1 - y2
@@ -275,9 +273,9 @@ def initialize_variogram_model_3d(x, y, z, values, variogram_model, variogram_mo
     """Initializes the variogram model for kriging according
     to user specifications or to defaults"""
 
-    x1, x2 = np.meshgrid(x, x)
-    y1, y2 = np.meshgrid(y, y)
-    z1, z2 = np.meshgrid(z, z)
+    x1, x2 = np.meshgrid(x, x, sparse=True)
+    y1, y2 = np.meshgrid(y, y, sparse=True)
+    z1, z2 = np.meshgrid(z, z, sparse=True)
     val1, val2 = np.meshgrid(values, values)
     d = np.sqrt((x1 - x2)**2 + (y1 - y2)**2 + (z1 - z2)**2)
     g = 0.5 * (val1 - val2)**2
@@ -376,15 +374,15 @@ def krige(x, y, z, coords, variogram_function, variogram_model_parameters, coord
         zero_index = None
         zero_value = False
 
-        x1, x2 = np.meshgrid(x, x)
-        y1, y2 = np.meshgrid(y, y)
-#GEO
+        x1, x2 = np.meshgrid(x, x, sparse=True)
+        y1, y2 = np.meshgrid(y, y, sparse=True)
+
         if coordinates_type == 'euclidean':
             d = np.sqrt((x1 - x2)**2 + (y1 - y2)**2)
             bd = np.sqrt((x - coords[0])**2 + (y - coords[1])**2)
         elif coordinates_type == 'geographic':
             d = great_circle_distance(x1, y1, x2, y2)
-            bd = great_circle_distane(x, y, coords[0]*np.ones(x.shape),
+            bd = great_circle_distance(x, y, coords[0]*np.ones(x.shape),
                                       coords[1]*np.ones(y.shape))
         if np.any(np.absolute(bd) <= 1e-10):
             zero_value = True
@@ -418,9 +416,9 @@ def krige_3d(x, y, z, vals, coords, variogram_function, variogram_model_paramete
         zero_index = None
         zero_value = False
 
-        x1, x2 = np.meshgrid(x, x)
-        y1, y2 = np.meshgrid(y, y)
-        z1, z2 = np.meshgrid(z, z)
+        x1, x2 = np.meshgrid(x, x, sparse=True)
+        y1, y2 = np.meshgrid(y, y, sparse=True)
+        z1, z2 = np.meshgrid(z, z, sparse=True)
         d = np.sqrt((x1 - x2)**2 + (y1 - y2)**2 + (z1 - z2)**2)
         bd = np.sqrt((x - coords[0])**2 + (y - coords[1])**2 + (z - coords[2])**2)
         if np.any(np.absolute(bd) <= 1e-10):
